@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "301850047622",
+    "project_id": "organizacionpersonal-71106",
+    "storage_bucket": "organizacionpersonal-71106.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301850047622:android:98fd65f622a6032a824d07",
+        "android_client_info": {
+          "package_name": "com.example.OrganizacionPersonal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDVqQddD-nsY_VD9Dd5ASbTLMQUIf6Xok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

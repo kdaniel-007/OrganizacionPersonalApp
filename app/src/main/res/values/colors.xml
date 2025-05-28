@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta Azul personalizada -->
+    <color name="azul_1">#E3F2FD</color>   <!-- Azul muy claro -->
+    <color name="azul_2">#90CAF9</color>   <!-- Azul claro -->
+    <color name="azul_3">#42A5F5</color>   <!-- Azul medio -->
+    <color name="azul_4">#1E88E5</color>   <!-- Azul fuerte -->
+    <color name="azul_5">#1565C0</color>   <!-- Azul profundo -->
+
+    <!-- Colores adicionales -->
+    <color name="negro_profundo">#121212</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="gris_claro">#F5F5F5</color>
+
+    <!-- Colores usados en el diseño -->
+    <color name="primary">@color/azul_4</color>
+    <color name="primaryVariant">@color/azul_5</color>
+    <color name="secondary">#03DAC5</color>
+    <color name="background">@color/gris_claro</color>
+    <color name="surface">@color/blanco</color>
+    <color name="onPrimary">@color/blanco</color>
+    <color name="onSecondary">@color/negro_profundo</color>
+
+    <!-- Colores para el layout de login -->
+    <color name="textColor">#212121</color>            <!-- Texto general -->
+    <color name="inputBackground">#F1F1F1</color>       <!-- Fondo de campos -->
+    <color name="inputTextColor">#000000</color>        <!-- Texto dentro de campos -->
+    <color name="colorTertiary">@color/azul_3</color>   <!-- Botón login -->
+    <color name="colorLightBlue">@color/azul_2</color>  <!-- Texto recupera contraseña -->
+</resources>

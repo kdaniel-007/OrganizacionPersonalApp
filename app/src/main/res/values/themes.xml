@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.OrganizacionPersonal" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Fuente personalizada -->
+        <item name="android:fontFamily">@font/poppins_black</item>
+        <item name="fontFamily">@font/poppins</item>
+
+        <!-- Colores personalizados -->
+        <item name="colorPrimary">@color/azul_1</item>
+        <item name="colorSecondary">@color/azul_3</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:textColor">@color/negro_profundo</item>
+    </style>
+
+    <style name="Theme.OrganizacionPersonal" parent="Base.Theme.OrganizacionPersonal" />
+</resources>

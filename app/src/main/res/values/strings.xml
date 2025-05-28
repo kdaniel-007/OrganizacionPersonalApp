@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PruebaLogin</string>
+    <string name="welcome">Hola, %s</string>
+    <string name="add_event">Agregar evento</string>
+</resources>
