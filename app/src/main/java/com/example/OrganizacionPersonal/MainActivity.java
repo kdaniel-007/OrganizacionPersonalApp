@@ -1,7 +1,5 @@
 package com.example.OrganizacionPersonal;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    // Método para manejar un registro básico (puedes moverlo a una nueva actividad de registro)
+    // Método para manejar un registro básico
     private void attemptRegistration() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -136,8 +134,6 @@ public class MainActivity extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
                         Toast.makeText(MainActivity.this, "Registro exitoso. ¡Inicia sesión!", Toast.LENGTH_LONG).show();
-                        // Después del registro, podrías querer que el usuario inicie sesión automáticamente
-                        // o lo dirijas a la pantalla de login.
                     } else {
                         if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                             Toast.makeText(MainActivity.this, "Este correo ya está registrado.", Toast.LENGTH_LONG).show();
