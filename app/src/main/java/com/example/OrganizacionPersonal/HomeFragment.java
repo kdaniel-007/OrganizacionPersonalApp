@@ -1,22 +1,28 @@
 package com.example.OrganizacionPersonal;
 
 import android.content.Intent;
+import android.graphics.drawable.PictureDrawable; // Importación necesaria
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button; // ¡Importa Button!
+import android.widget.Button;
+import android.widget.ImageView; // Importación necesaria
 import android.widget.TextView;
-import android.widget.Toast; // ¡Importa Toast!
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.firebase.auth.FirebaseAuth; // ¡Importa FirebaseAuth!
+import com.caverock.androidsvg.SVG; // Importación necesaria
+import com.caverock.androidsvg.SVGParseException; // Importación necesaria
+import com.google.firebase.auth.FirebaseAuth;
+
 
 public class HomeFragment extends Fragment {
 
     private TextView tvBienvenida;
-    private Button btnLogout; // Declara el botón
+    private Button btnLogout;
+    private ImageView imageView; // Declaración de ImageView
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,6 +30,35 @@ public class HomeFragment extends Fragment {
 
         tvBienvenida = view.findViewById(R.id.tvBienvenida);
         btnLogout = view.findViewById(R.id.btnLogout); // Inicializa el botón con su ID
+        imageView = view.findViewById(R.id.imageView); // Inicializa el ImageView con su ID
+
+        // Carga el SVG desde la carpeta de recursos 'res/raw'
+        try {
+            // ¡IMPORTANTE! Asegúrate de que tu archivo SVG se llame 'logo.svg' en la carpeta res/raw
+            // Y que el nombre del recurso sea R.raw.logo
+            SVG svg = SVG.getFromResource(getResources(), R.raw.logo); // <-- ¡Cambio clave aquí!
+            if (svg != null) {
+                // Puedes ajustar el tamaño del SVG si es necesario.
+                // Por ejemplo, para que el SVG se ajuste al tamaño del ImageView,
+                // no es necesario setDocumentWidth/Height si el ImageView ya tiene medidas fijas o wrap_content/match_parent.
+                // Si el SVG es demasiado grande, o se ve mal, puedes probar:
+                // svg.setDocumentViewBox(0, 0, svg.getDocumentWidth(), svg.getDocumentHeight()); // Restablece viewBox
+                // svg.setDocumentWidth(imageView.getMeasuredWidth() > 0 ? imageView.getMeasuredWidth() : 500); // Ejemplo de ajuste
+                // svg.setDocumentHeight(imageView.getMeasuredHeight() > 0 ? imageView.getMeasuredHeight() : 500); // Ejemplo de ajuste
+
+                imageView.setImageDrawable(new PictureDrawable(svg.renderToPicture()));
+            } else {
+                Toast.makeText(getActivity(), "SVG es nulo, no se pudo cargar. Revisa el archivo 'logo.svg'.", Toast.LENGTH_LONG).show();
+            }
+        } catch (SVGParseException e) {
+            // Manejar el error si el archivo SVG no se puede parsear (ej. formato inválido)
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error al parsear el logo SVG: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            // Captura cualquier otra excepción inesperada
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error desconocido al cargar SVG: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
         // (Opcional) Mostrar el email del usuario en el mensaje de bienvenida
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
