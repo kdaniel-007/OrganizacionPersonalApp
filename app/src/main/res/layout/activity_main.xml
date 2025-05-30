@@ -49,7 +49,7 @@
             app:boxCornerRadiusTopEnd="8dp"
             app:boxCornerRadiusBottomStart="8dp"
             app:boxCornerRadiusBottomEnd="8dp"
-            app:boxStrokeColor="@color/md_theme_light_surfaceDim" app:hintTextColor="?attr/colorOnSurfaceVariant" app:passwordToggleEnabled="true"
+            app:boxStrokeColor="@color/md_theme_light_surfaceDim" app:hintTextColor="@color/md_theme_dark_onBackground" app:passwordToggleEnabled="true"
             app:passwordToggleTint="?attr/colorOnSurface"> <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
