@@ -1,18 +1,29 @@
 package com.example.OrganizacionPersonal;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private Fragment activeFragment = null; // Para llevar un registro del fragmento activo
+    private Fragment activeFragment = null;
+    private MaterialToolbar toolbar;
+    private FirebaseAuth mAuth;
+
+    private static final String TAG = "HomeActivity";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -20,7 +31,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        mAuth = FirebaseAuth.getInstance();
+
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         bottomNav = findViewById(R.id.bottom_navigation);
@@ -36,37 +49,66 @@ public class HomeActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_calendar) {
                 selectedFragment = new CalendarFragment();
                 title = "Calendario";
-            } else if (itemId == R.id.nav_tasks) { // Este ID ahora coincide con el menú
+            } else if (itemId == R.id.nav_tasks) {
                 selectedFragment = new TareasFragment();
                 title = "Tareas";
-            } else if (itemId == R.id.nav_projects) { // Este ID ahora coincide con el menú
+            } else if (itemId == R.id.nav_projects) {
                 selectedFragment = new ProyectosFragment();
                 title = "Proyectos";
             }
 
-            // Cargar fragmento solo si es diferente al actual, o si no hay un fragmento activo
             if (selectedFragment != null && (activeFragment == null || !selectedFragment.getClass().equals(activeFragment.getClass()))) {
                 loadFragment(selectedFragment, title);
                 return true;
             }
-            return false; // No se cambia el fragmento (ya es el activo o es nulo)
+            return false;
         });
 
-        // Cargar fragmento inicial
         if (savedInstanceState == null) {
             HomeFragment initialFragment = new HomeFragment();
             loadFragment(initialFragment, "Inicio");
-            bottomNav.setSelectedItemId(R.id.nav_home); // Esto también disparará el listener y cargará el fragmento.
+            bottomNav.setSelectedItemId(R.id.nav_home);
         }
     }
 
-    void loadFragment(Fragment newFragment, String title) {
+    // Método para inflar el menú del Toolbar (para el botón de cerrar sesión)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.home_toolbar_menu, menu);
+        return true;
+    }
+
+    // Método para manejar clics en los ítems del menú del Toolbar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            logoutUser();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Método para cerrar la sesión del usuario
+    private void logoutUser() {
+        mAuth.signOut(); // Cierra la sesión de Firebase
+
+        // Navegar de vuelta a la MainActivity (pantalla de login)
+        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Limpia la pila de actividades
+        startActivity(intent);
+        finish(); // Finaliza HomeActivity para que el usuario no pueda volver con el botón de atrás
+        Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Usuario cerró sesión.");
+    }
+
+    // Método para cargar fragmentos con animaciones
+    public void loadFragment(Fragment newFragment, String title) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         int enterAnim = 0;
         int exitAnim = 0;
 
-        // Determinar la dirección de la animación
         int currentTabIndex = getTabIndex(activeFragment);
         int newTabIndex = getTabIndex(newFragment);
 
@@ -85,15 +127,14 @@ public class HomeActivity extends AppCompatActivity {
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.commit();
 
-        // Actualizar el fragmento activo
         activeFragment = newFragment;
 
-        // Actualizar el título de la Toolbar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }
     }
 
+    // Helper para obtener un índice basado en el tipo de fragmento (para animaciones)
     private int getTabIndex(Fragment fragment) {
         if (fragment instanceof HomeFragment) return 0;
         if (fragment instanceof CalendarFragment) return 1;

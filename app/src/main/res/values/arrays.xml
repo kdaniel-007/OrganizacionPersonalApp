@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="task_filter_options">
+        <item>Todas las Tareas</item>
+        <item>Tareas Pendientes</item>
+        <item>Tareas Completadas</item>
+    </string-array>
+</resources>

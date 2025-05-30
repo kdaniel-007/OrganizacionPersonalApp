@@ -4,23 +4,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center">
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Grabar nota de voz"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="20dp"/>
+    android:gravity="center"
+    android:background="?android:attr/colorBackground"> <TextView
+    android:id="@+id/tvTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Grabar nota de voz"
+    android:textSize="20sp"
+    android:textStyle="bold"
+    android:textColor="?attr/colorOnBackground"
+    android:layout_marginBottom="20dp"/>
 
     <Button
         android:id="@+id/btnRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_dark_secondary"
-        android:textColor="@android:color/white"
+        android:backgroundTint="@color/organize_dark_blue" android:textColor="@android:color/white"
         android:text="Iniciar grabación"
         android:layout_marginBottom="10dp"/>
 
@@ -28,8 +27,7 @@
         android:id="@+id/btnStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="?attr/elevationOverlayColor"
-        android:enabled="false"
+        android:backgroundTint="@color/organize_primary_blue" android:enabled="false"
         android:text="Detener y agendar"
         android:textColor="@android:color/white" />
 </LinearLayout>

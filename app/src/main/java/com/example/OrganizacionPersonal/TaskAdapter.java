@@ -13,7 +13,6 @@ import java.util.List;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
     private List<Task> tasks;
-    // Cambiamos el nombre de la interfaz a OnTaskActionListener
     private OnTaskActionListener listener;
 
     // Nueva interfaz para manejar todas las acciones de la tarea
@@ -44,7 +43,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = tasks.get(position);
 
-        holder.tvTaskName.setText(task.getName());
+        // CAMBIO: Usar getTitle() en lugar de getName()
+        holder.tvTaskName.setText(task.getTitle());
         holder.checkboxCompleted.setOnCheckedChangeListener(null); // Desactivar listener para evitar bucles
         holder.checkboxCompleted.setChecked(task.isCompleted()); // Establecer el estado del CheckBox
 
@@ -101,6 +101,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     // removeItem se mantiene pero no se usa directamente para la eliminación de Firestore
+    // Solo si necesitas eliminar un ítem directamente de la lista del adaptador sin pasar por Firestore
     public void removeItem(int position) {
         tasks.remove(position);
         notifyItemRemoved(position);

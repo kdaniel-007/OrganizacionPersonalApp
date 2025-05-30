@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="¡Hola! 👋 Aquí tienes un resumen de tu día."
+                android:text="@string/hola_aqu_tienes_un_resumen_de_tu_d_a"
                 android:textAlignment="center"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="20sp"
