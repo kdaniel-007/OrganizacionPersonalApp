@@ -25,6 +25,9 @@ import java.util.Calendar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+// Importar la clase necesaria para el manejo del botón de retroceso
+import androidx.activity.OnBackPressedCallback;
+
 public class VoiceNoteActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSION_CODE = 1000;
@@ -61,15 +64,25 @@ public class VoiceNoteActivity extends AppCompatActivity {
                 });
 
         // Comprobar y solicitar permisos de grabación
-        // Esta es la parte que dio error, ahora los métodos están definidos ANTES.
         if (checkPermissions()) {
-            btnRecord.setEnabled(true); // Si ya tenemos los permisos, habilitamos el botón de grabar
+            btnRecord.setEnabled(true);
         } else {
-            requestPermissions(); // Si no, los solicitamos
+            requestPermissions();
         }
 
         btnRecord.setOnClickListener(v -> startRecording());
         btnStop.setOnClickListener(v -> stopAndUpload());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed(); // Esto disparará el comportamiento por defecto
+                getOnBackPressedDispatcher().onBackPressed(); // Esto disparará el comportamiento por defecto
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            }
+        });
+
     }
 
     private boolean checkPermissions() {
@@ -89,10 +102,10 @@ public class VoiceNoteActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permiso de grabación concedido", Toast.LENGTH_SHORT).show();
-                btnRecord.setEnabled(true); // Habilitar el botón si el permiso es concedido
+                btnRecord.setEnabled(true);
             } else {
                 Toast.makeText(this, "Permiso de grabación denegado. No se puede grabar.", Toast.LENGTH_LONG).show();
-                btnRecord.setEnabled(false); // Deshabilitar si el permiso es denegado
+                btnRecord.setEnabled(false);
             }
         }
     }
@@ -107,7 +120,7 @@ public class VoiceNoteActivity extends AppCompatActivity {
         fileName = musicDir.getAbsolutePath() + "/nota_" + System.currentTimeMillis() + ".3gp";
 
         try {
-            recorder = new MediaRecorder(this); // Ya no necesitamos el if/else si minSdk es 33
+            recorder = new MediaRecorder(this);
 
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -223,4 +236,5 @@ public class VoiceNoteActivity extends AppCompatActivity {
             Toast.makeText(this, "Archivo local eliminado.", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

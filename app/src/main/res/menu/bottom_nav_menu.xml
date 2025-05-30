@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
         android:title="Inicio" />
+
     <item
         android:id="@+id/nav_calendar"
         android:icon="@drawable/ic_calendar"
         android:title="Calendario"/>
+
     <item
-        android:id="@+id/nav_tasks"
-        android:icon="@drawable/ic_tasks"
+        android:id="@+id/nav_tasks" android:icon="@drawable/ic_tasks"
         android:title="Tareas"/>
+
     <item
-        android:id="@+id/nav_projects"
-        android:icon="@drawable/ic_projects"
+        android:id="@+id/nav_projects" android:icon="@drawable/ic_projects"
         android:title="Proyectos"/>
+
 </menu>
