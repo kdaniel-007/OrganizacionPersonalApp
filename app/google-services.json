@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "301850047622",
+    "firebase_url": "https://organizacionpersonal-71106-default-rtdb.firebaseio.com",
     "project_id": "organizacionpersonal-71106",
     "storage_bucket": "organizacionpersonal-71106.firebasestorage.app"
   },
@@ -12,7 +13,12 @@
           "package_name": "com.example.OrganizacionPersonal"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "301850047622-33rlnsm0euqd4mbn6f1v0ba0rq7pqffj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCDVqQddD-nsY_VD9Dd5ASbTLMQUIf6Xok"
@@ -20,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "301850047622-33rlnsm0euqd4mbn6f1v0ba0rq7pqffj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

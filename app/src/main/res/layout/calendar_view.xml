@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:selectedWeekBackgroundColor="#050505"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -19,7 +20,7 @@
         android:id="@+id/btn_add_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/azul_4"
+        android:backgroundTint="@color/organize_dark_blue"
         android:textColor="@android:color/white"
         android:text="Agregar evento"
         android:layout_marginTop="16dp"/>
@@ -28,9 +29,9 @@
         android:id="@+id/btn_grabar_nota"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/azul_5"
-        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/organize_primary_blue"
         android:text="Grabar nota de voz"
-        android:layout_marginTop="8dp"/>
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

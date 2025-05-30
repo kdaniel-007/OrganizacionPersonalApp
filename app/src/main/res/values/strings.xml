@@ -1,5 +1,19 @@
 <resources>
-    <string name="app_name">PruebaLogin</string>
+    <string name="app_name">OrganizacionPersonal</string>
     <string name="welcome">Hola, %s</string>
     <string name="add_event">Agregar evento</string>
+    <string name="default_web_client_id">"301850047622-33rlnsm0euqd4mbn6f1v0ba0rq7pqffj.apps.googleusercontent.com"</string>
+    <string name="app_logo_description">Logo de la aplicación Organizacion Personal</string>
+
+    <string name="email_hint">Correo Electrónico</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="login_button_text">Iniciar Sesión</string>
+    <string name="forgot_password_text">¿Olvidaste tu contraseña?</string>
+    <string name="register_text">¿No tienes una cuenta? Regístrate</string>
+    <string name="register_button_text">Registrarse</string>
+    <string name="back_to_login_text">¿Ya tienes una cuenta? Inicia sesión</string>
+    <string name="confirm_password_hint">Confirmar Contraseña</string>
+    <string name="no_hay_proyectos">No hay proyectos</string>
+    <string name="no_hay_tareas">No hay tareas</string>
+    <string name="parece_que_no_tienes_tareas_pendientes_n_por_qu_no_a_ades_una">¡Parece que no tienes tareas pendientes! \n ¿Por qué no añades una?</string>
 </resources>

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 public class CalendarFragment extends Fragment {
 
@@ -31,14 +32,20 @@ public class CalendarFragment extends Fragment {
                     .setData(android.provider.CalendarContract.Events.CONTENT_URI)
                     .putExtra(android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME, fechaSeleccionada)
                     .putExtra(android.provider.CalendarContract.Events.TITLE, "Nuevo evento");
+            // Nota: No aplicamos overridePendingTransition aquí porque es una Intent implícita
             startActivity(intent);
         });
 
         view.findViewById(R.id.btn_grabar_nota).setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), VoiceNoteActivity.class));
+            Intent intent = new Intent(getActivity(), VoiceNoteActivity.class);
+            startActivity(intent);
+            // Aplicar la animación a la Activity que contiene este Fragment
+            // getHost() puede ser null si el fragmento no está adjunto, getActivity() es más seguro.
+            if (getActivity() != null) {
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
         });
 
         return view;
     }
 }
-
