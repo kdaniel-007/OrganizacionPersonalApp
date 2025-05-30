@@ -16,4 +16,5 @@
     <string name="no_hay_proyectos">No hay proyectos</string>
     <string name="no_hay_tareas">No hay tareas</string>
     <string name="parece_que_no_tienes_tareas_pendientes_n_por_qu_no_a_ades_una">¡Parece que no tienes tareas pendientes! \n ¿Por qué no añades una?</string>
+    <string name="hola_aqu_tienes_un_resumen_de_tu_d_a">¡Hola! 👋 Aquí tienes un resumen de tu día.</string>
 </resources>

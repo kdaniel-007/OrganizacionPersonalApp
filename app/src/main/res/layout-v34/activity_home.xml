@@ -10,15 +10,16 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/system_primary_light"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="?attr/colorPrimary" app:layout_constraintTop_toTopOf="parent"
         app:title="Organización Personal"
-        app:titleTextColor="?attr/colorOnPrimary" /> <FrameLayout
-    android:id="@+id/fragment_container"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    app:layout_constraintTop_toBottomOf="@id/toolbar"
-    app:layout_constraintBottom_toTopOf="@id/bottom_navigation" />
+        app:titleTextColor="?attr/colorOnPrimary" />
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

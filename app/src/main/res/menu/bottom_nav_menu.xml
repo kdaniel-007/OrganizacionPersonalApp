@@ -12,11 +12,13 @@
         android:title="Calendario"/>
 
     <item
-        android:id="@+id/nav_tasks" android:icon="@drawable/ic_tasks"
+        android:id="@+id/nav_tasks"
+        android:icon="@drawable/ic_tasks"
         android:title="Tareas"/>
 
     <item
-        android:id="@+id/nav_projects" android:icon="@drawable/ic_projects"
+        android:id="@+id/nav_projects"
+        android:icon="@drawable/ic_projects"
         android:title="Proyectos"/>
 
 </menu>

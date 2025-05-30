@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="?android:attr/colorBackground"
     android:padding="16dp">
 
     <CalendarView
@@ -11,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:selectedWeekBackgroundColor="#050505"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:selectedWeekBackgroundColor="?attr/colorPrimary" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

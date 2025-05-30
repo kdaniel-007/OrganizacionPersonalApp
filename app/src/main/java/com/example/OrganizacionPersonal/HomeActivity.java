@@ -1,31 +1,29 @@
 package com.example.OrganizacionPersonal;
 
 import android.annotation.SuppressLint;
-import android.content.Intent; // Necesario para iniciar otra actividad
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log; // Para mensajes de log
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth; // Importar FirebaseAuth
-
-// Para el menú del Toolbar
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
     private Fragment activeFragment = null;
-    private MaterialToolbar toolbar; // Asegúrate de tener esta declaración
-    private FirebaseAuth mAuth; // Declarar FirebaseAuth
+    private MaterialToolbar toolbar;
+    private FirebaseAuth mAuth;
 
-    private static final String TAG = "HomeActivity"; // Para logs
+    private static final String TAG = "HomeActivity";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -33,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mAuth = FirebaseAuth.getInstance(); // Inicializar FirebaseAuth
+        mAuth = FirebaseAuth.getInstance();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,10 +71,10 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    // Método para inflar el menú del Toolbar
+    // Método para inflar el menú del Toolbar (para el botón de cerrar sesión)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home_toolbar_menu, menu); // Infla tu nuevo menú
+        getMenuInflater().inflate(R.menu.home_toolbar_menu, menu);
         return true;
     }
 
@@ -85,7 +83,7 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_logout) {
-            logoutUser(); // Llamar al método de cerrar sesión
+            logoutUser();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -104,8 +102,8 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(TAG, "Usuario cerró sesión.");
     }
 
-
-    void loadFragment(Fragment newFragment, String title) {
+    // Método para cargar fragmentos con animaciones
+    public void loadFragment(Fragment newFragment, String title) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         int enterAnim = 0;
@@ -114,10 +112,10 @@ public class HomeActivity extends AppCompatActivity {
         int currentTabIndex = getTabIndex(activeFragment);
         int newTabIndex = getTabIndex(newFragment);
 
-        if (newTabIndex > currentTabIndex) {
+        if (newTabIndex > currentTabIndex) { // Moviéndose a la derecha
             enterAnim = R.anim.slide_in_right;
             exitAnim = R.anim.slide_out_left;
-        } else if (newTabIndex < currentTabIndex) {
+        } else if (newTabIndex < currentTabIndex) { // Moviéndose a la izquierda
             enterAnim = R.anim.slide_in_left;
             exitAnim = R.anim.slide_out_right;
         }
@@ -136,11 +134,12 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    // Helper para obtener un índice basado en el tipo de fragmento (para animaciones)
     private int getTabIndex(Fragment fragment) {
         if (fragment instanceof HomeFragment) return 0;
         if (fragment instanceof CalendarFragment) return 1;
         if (fragment instanceof TareasFragment) return 2;
         if (fragment instanceof ProyectosFragment) return 3;
-        return -1;
+        return -1; // Fragmento desconocido o nulo
     }
 }
