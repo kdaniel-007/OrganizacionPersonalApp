@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/email_hint"
             android:inputType="textEmailAddress"
-            android:textColor="?attr/colorOnSurface" /> </com.google.android.material.textfield.TextInputLayout>
+            android:textColor="@color/md_theme_dark_inverseSurface" /> </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -50,13 +50,13 @@
             app:boxCornerRadiusBottomStart="8dp"
             app:boxCornerRadiusBottomEnd="8dp"
             app:boxStrokeColor="@color/md_theme_light_surfaceDim" app:hintTextColor="@color/md_theme_dark_onBackground" app:passwordToggleEnabled="true"
-            app:passwordToggleTint="?attr/colorOnSurface"> <com.google.android.material.textfield.TextInputEditText
+            app:passwordToggleTint="@color/md_theme_dark_inverseSurface"> <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password_hint"
             android:inputType="textPassword"
-            android:textColor="?attr/colorOnSurface" /> </com.google.android.material.textfield.TextInputLayout>
+            android:textColor="@color/md_theme_dark_inverseSurface" /> </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnLogin"
