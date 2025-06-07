@@ -8,21 +8,21 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
     private List<Task> tasks;
     private OnTaskActionListener listener;
 
-    // Nueva interfaz para manejar todas las acciones de la tarea
     public interface OnTaskActionListener {
         void onTaskClick(int position);
         void onTaskLongClick(int position);
-        void onTaskCompletedChanged(int position, boolean isChecked); // Nuevo método para el CheckBox
+        void onTaskCompletedChanged(int position, boolean isChecked);
     }
 
-    // Método para establecer el listener (ahora OnTaskActionListener)
     public void setOnTaskActionListener(OnTaskActionListener listener) {
         this.listener = listener;
     }
@@ -43,39 +43,44 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = tasks.get(position);
 
-        // CAMBIO: Usar getTitle() en lugar de getName()
         holder.tvTaskName.setText(task.getTitle());
-        holder.checkboxCompleted.setOnCheckedChangeListener(null); // Desactivar listener para evitar bucles
-        holder.checkboxCompleted.setChecked(task.isCompleted()); // Establecer el estado del CheckBox
+        holder.checkboxCompleted.setOnCheckedChangeListener(null);
+        holder.checkboxCompleted.setChecked(task.isCompleted());
 
-        // Añadir/Remover efecto tachado basado en el estado completado
         if (task.isCompleted()) {
             holder.tvTaskName.setPaintFlags(holder.tvTaskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             holder.tvTaskName.setPaintFlags(holder.tvTaskName.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
-        // Volver a añadir el listener para el CheckBox
         holder.checkboxCompleted.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (listener != null) {
                 listener.onTaskCompletedChanged(position, isChecked);
             }
         });
 
-        // Opcional: manejar el clic en el ítem (para edición)
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onTaskClick(position);
             }
         });
 
-        // Opcional: manejar el clic largo en el ítem
         holder.itemView.setOnLongClickListener(v -> {
             if (listener != null) {
                 listener.onTaskLongClick(position);
             }
             return true;
         });
+
+        // Mostrar fecha de vencimiento
+        if (task.getDueDate() != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            holder.tvDueDate.setText("Vence: " + sdf.format(task.getDueDate()));
+            holder.tvDueDate.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvDueDate.setText("");
+            holder.tvDueDate.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -85,23 +90,22 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTaskName;
-        public CheckBox checkboxCompleted; // Declarar el CheckBox
+        public TextView tvDueDate;
+        public CheckBox checkboxCompleted;
 
         public TaskViewHolder(View itemView) {
             super(itemView);
             tvTaskName = itemView.findViewById(R.id.tvTaskName);
-            checkboxCompleted = itemView.findViewById(R.id.checkboxCompleted); // Enlazar el CheckBox
+            tvDueDate = itemView.findViewById(R.id.tvDueDate);
+            checkboxCompleted = itemView.findViewById(R.id.checkboxCompleted);
         }
     }
 
-    // Método para actualizar los datos del adaptador
     public void updateData(List<Task> newTasks) {
         this.tasks = newTasks;
-        notifyDataSetChanged(); // Notifica al RecyclerView que los datos han cambiado
+        notifyDataSetChanged();
     }
 
-    // removeItem se mantiene pero no se usa directamente para la eliminación de Firestore
-    // Solo si necesitas eliminar un ítem directamente de la lista del adaptador sin pasar por Firestore
     public void removeItem(int position) {
         tasks.remove(position);
         notifyItemRemoved(position);

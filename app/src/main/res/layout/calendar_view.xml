@@ -1,37 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:padding="16dp">
 
     <CalendarView
         android:id="@+id/cvCalendario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:selectedWeekBackgroundColor="#050505"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="8dp"
+        android:selectedWeekBackgroundColor="#050505" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_add_event"
+    <TextView
+        android:id="@+id/tvFechaSeleccionada"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/organize_dark_blue"
-        android:textColor="@android:color/white"
-        android:text="Agregar evento"
-        android:layout_marginTop="16dp"/>
+        android:layout_below="@id/cvCalendario"
+        android:layout_marginTop="8dp"
+        android:text="Eventos del día"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_grabar_nota"
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/organize_primary_blue"
-        android:text="Grabar nota de voz"
-        android:textColor="@android:color/white" />
+        android:layout_below="@id/tvFechaSeleccionada"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        android:layout_marginTop="4dp"
+        android:visibility="gone">
 
-</LinearLayout>
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ic_empty_tasks"
+            android:contentDescription="@string/sin_eventos" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No hay eventos para esta fecha"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textColor="?attr/colorOnSurface" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/emptyStateLayout"
+        android:layout_above="@+id/fab_expandable_menu"
+        android:layout_marginTop="8dp"
+        android:layoutAnimation="@anim/layout_anim_fall_down"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+
+    <!-- Botón flotante con menú expandible -->
+    <LinearLayout
+        android:id="@+id/fab_expandable_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabNotaVoz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Grabar nota de voz"
+            android:visibility="gone"
+            app:srcCompat="@android:drawable/ic_btn_speak_now"
+            app:backgroundTint="@color/organize_primary_blue"
+            app:tint="@android:color/white"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAgregarEvento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Agregar evento manual"
+            android:visibility="gone"
+            app:srcCompat="@android:drawable/ic_input_add"
+            app:backgroundTint="@color/organize_dark_blue"
+            app:tint="@android:color/white"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabExpandir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Mostrar menú"
+            app:srcCompat="@android:drawable/ic_menu_more"
+            app:backgroundTint="?attr/colorPrimary"
+            app:tint="@android:color/white"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

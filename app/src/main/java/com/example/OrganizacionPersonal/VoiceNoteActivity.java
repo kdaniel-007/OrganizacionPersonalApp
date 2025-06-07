@@ -1,240 +1,185 @@
 package com.example.OrganizacionPersonal;
 
-import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.CalendarContract;
+import android.speech.RecognizerIntent;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import java.io.File;
-import java.io.IOException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 import java.util.Calendar;
-
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-// Importar la clase necesaria para el manejo del botón de retroceso
-import androidx.activity.OnBackPressedCallback;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VoiceNoteActivity extends AppCompatActivity {
 
-    private static final int REQUEST_PERMISSION_CODE = 1000;
-
-    private MediaRecorder recorder;
-    private String fileName;
-    private Button btnRecord, btnStop;
-
-    private String audioDownloadUrl = null;
-
-    private ActivityResultLauncher<Intent> addEventLauncher;
+    private static final int REQUEST_CODE_SPEECH_INPUT = 100;
+    private TextView tvTextoNota;
+    private Button btnSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_note);
 
-        btnRecord = findViewById(R.id.btnRecord);
-        btnStop = findViewById(R.id.btnStop);
+        tvTextoNota = findViewById(R.id.tvTextoNota);
+        btnSpeech = findViewById(R.id.btnSpeech);
 
-        // Inicializar botones (asegurarse de que estén en el estado correcto al inicio)
-        btnRecord.setEnabled(false); // Iniciar deshabilitado hasta tener permisos
-        btnStop.setEnabled(false);
+        btnSpeech.setOnClickListener(v -> startVoiceRecognition());
+    }
 
-        // --- Registrar el ActivityResultLauncher ---
-        addEventLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Toast.makeText(this, "Evento de nota de voz agregado al calendario.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Creación de evento de nota de voz cancelada.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void startVoiceRecognition() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-ES");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Habla ahora...");
 
-        // Comprobar y solicitar permisos de grabación
-        if (checkPermissions()) {
-            btnRecord.setEnabled(true);
-        } else {
-            requestPermissions();
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
+        } catch (Exception e) {
+            Toast.makeText(this, "No se puede iniciar el reconocimiento de voz", Toast.LENGTH_SHORT).show();
         }
-
-        btnRecord.setOnClickListener(v -> startRecording());
-        btnStop.setOnClickListener(v -> stopAndUpload());
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                setEnabled(false);
-                getOnBackPressedDispatcher().onBackPressed(); // Esto disparará el comportamiento por defecto
-                getOnBackPressedDispatcher().onBackPressed(); // Esto disparará el comportamiento por defecto
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
-    }
-
-    private boolean checkPermissions() {
-        int recordPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        return recordPermission == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.RECORD_AUDIO},
-                REQUEST_PERMISSION_CODE);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permiso de grabación concedido", Toast.LENGTH_SHORT).show();
-                btnRecord.setEnabled(true);
-            } else {
-                Toast.makeText(this, "Permiso de grabación denegado. No se puede grabar.", Toast.LENGTH_LONG).show();
-                btnRecord.setEnabled(false);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK && data != null) {
+            ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (result != null && result.size() > 0) {
+                String textoReconocido = result.get(0);
+                tvTextoNota.setText(textoReconocido);
+                procesarTextoReconocido(textoReconocido);
             }
         }
     }
 
-    private void startRecording() {
-        File musicDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-        if (musicDir == null || !musicDir.exists() && !musicDir.mkdirs()) {
-            Toast.makeText(this, "No se pudo crear el directorio para guardar audio", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        fileName = musicDir.getAbsolutePath() + "/nota_" + System.currentTimeMillis() + ".3gp";
-
-        try {
-            recorder = new MediaRecorder(this);
-
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            recorder.setOutputFile(fileName);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-            recorder.prepare();
-            recorder.start();
-            Toast.makeText(this, "Grabando...", Toast.LENGTH_SHORT).show();
-            btnRecord.setEnabled(false);
-            btnStop.setEnabled(true);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error al iniciar grabación: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            btnRecord.setEnabled(true);
-            btnStop.setEnabled(false);
-        }
-    }
-
-    private void stopAndUpload() {
-        if (recorder == null) {
-            Toast.makeText(this, "No hay grabación activa.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            recorder.stop();
-            recorder.release();
-            recorder = null;
-            Toast.makeText(this, "Grabación finalizada", Toast.LENGTH_SHORT).show();
-            btnRecord.setEnabled(true);
-            btnStop.setEnabled(false);
-
-            uploadToFirebase();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error al detener grabación. Intenta de nuevo.", Toast.LENGTH_LONG).show();
-            recorder = null;
-        }
-    }
-
-    private void uploadToFirebase() {
-        File audioFile = new File(fileName);
-        if (!audioFile.exists()) {
-            Toast.makeText(this, "Archivo de audio no encontrado para subir.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Uri fileUri = Uri.fromFile(audioFile);
-        String nombreArchivo = audioFile.getName();
-
-        StorageReference audioRef = FirebaseStorage.getInstance().getReference().child("notas/" + nombreArchivo);
-
-        audioRef.putFile(fileUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Toast.makeText(this, "Nota de voz subida a Firebase Storage", Toast.LENGTH_SHORT).show();
-                    audioRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        audioDownloadUrl = uri.toString();
-                        crearEventoEnCalendario(nombreArchivo, audioDownloadUrl);
-                    }).addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error al obtener URL de descarga", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                        crearEventoEnCalendario(nombreArchivo, null);
-                    });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al subir nota de voz a Firebase: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                });
-    }
-
-    private void crearEventoEnCalendario(String nombreArchivo, String downloadUrl) {
+    private void procesarTextoReconocido(String texto) {
         Calendar beginTime = Calendar.getInstance();
-        Calendar endTime = Calendar.getInstance();
-        endTime.add(Calendar.MINUTE, 30);
 
-        String description = "Nota de voz grabada en 'Organización Personal'.";
-        if (downloadUrl != null && !downloadUrl.isEmpty()) {
-            description += "\nEnlace de audio: " + downloadUrl;
+        texto = texto.toLowerCase();
+
+        // Día específico como "el viernes"
+        Pattern diaPattern = Pattern.compile("el (lunes|martes|miércoles|jueves|viernes|sábado|domingo)");
+        Matcher diaMatcher = diaPattern.matcher(texto);
+        if (diaMatcher.find()) {
+            String diaTexto = diaMatcher.group(1);
+            int diaSemana = obtenerDiaSemana(diaTexto);
+            if (diaSemana != -1) {
+                int hoy = beginTime.get(Calendar.DAY_OF_WEEK);
+                int diferenciaDias = (diaSemana - hoy + 7) % 7;
+                beginTime.add(Calendar.DAY_OF_MONTH, diferenciaDias);
+            }
+        } else if (texto.contains("mañana")) {
+            beginTime.add(Calendar.DAY_OF_MONTH, 1);
+        } else if (texto.contains("pasado mañana")) {
+            beginTime.add(Calendar.DAY_OF_MONTH, 2);
         }
 
-        Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.Events.TITLE, "Revisar Nota de Voz - " + nombreArchivo)
-                .putExtra(CalendarContract.Events.DESCRIPTION, description)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
-                .putExtra(CalendarContract.Events.ALL_DAY, false)
-                .putExtra(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CONFIRMED)
-                .putExtra(CalendarContract.Events.VISIBLE, 0)
-                .putExtra(CalendarContract.Events.GUESTS_CAN_MODIFY, true)
-                .putExtra(CalendarContract.Events.CALENDAR_ID, 1)
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, "App Organización Personal");
+        // Soporte para "a las 3", "a las 14:30", "a las 3 y media"
+        Pattern horaPattern = Pattern.compile("a las (\\d{1,2})(?::(\\d{2}))?(?:\\s*y\\s*media)?");
+        Matcher horaMatcher = horaPattern.matcher(texto);
 
-        intent.putExtra(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
-        intent.putExtra(CalendarContract.Reminders.MINUTES, 10);
+        if (horaMatcher.find()) {
+            int hora = Integer.parseInt(horaMatcher.group(1));
+            int minuto = 0;
 
-        addEventLauncher.launch(intent);
+            if (horaMatcher.group(2) != null) {
+                minuto = Integer.parseInt(horaMatcher.group(2));
+            } else if (texto.contains("y media")) {
+                minuto = 30;
+            }
+
+            beginTime.set(Calendar.HOUR_OF_DAY, hora);
+            beginTime.set(Calendar.MINUTE, minuto);
+            beginTime.set(Calendar.SECOND, 0);
+        } else if (texto.contains("esta noche")) {
+            beginTime.set(Calendar.HOUR_OF_DAY, 20);
+            beginTime.set(Calendar.MINUTE, 0);
+        } else if (texto.contains("en la tarde")) {
+            beginTime.set(Calendar.HOUR_OF_DAY, 15);
+            beginTime.set(Calendar.MINUTE, 0);
+        } else if (texto.contains("en la mañana")) {
+            beginTime.set(Calendar.HOUR_OF_DAY, 9);
+            beginTime.set(Calendar.MINUTE, 0);
+        } else {
+            // Buscar "dentro de X horas"
+            Pattern dentroPattern = Pattern.compile("dentro de (\\d{1,2}) horas");
+            Matcher dentroMatcher = dentroPattern.matcher(texto);
+            if (dentroMatcher.find()) {
+                int horas = Integer.parseInt(dentroMatcher.group(1));
+                beginTime.add(Calendar.HOUR_OF_DAY, horas);
+            } else {
+                beginTime.add(Calendar.MINUTE, 2);
+            }
+        }
+
+        crearEventoDesdeTexto(texto, beginTime);
+        programarNotificacion(beginTime, texto);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (recorder != null) {
-            recorder.release();
-            recorder = null;
+    private int obtenerDiaSemana(String diaTexto) {
+        switch (diaTexto) {
+            case "domingo": return Calendar.SUNDAY;
+            case "lunes": return Calendar.MONDAY;
+            case "martes": return Calendar.TUESDAY;
+            case "miércoles": return Calendar.WEDNESDAY;
+            case "jueves": return Calendar.THURSDAY;
+            case "viernes": return Calendar.FRIDAY;
+            case "sábado": return Calendar.SATURDAY;
+            default: return -1;
         }
     }
 
-    private void deleteAudioFile() {
-        File file = new File(fileName);
-        if (file.exists()) {
-            file.delete();
-            Toast.makeText(this, "Archivo local eliminado.", Toast.LENGTH_SHORT).show();
+    private void crearEventoDesdeTexto(String texto, Calendar beginTime) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, "Inicia sesión para guardar la nota", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Evento nuevoEvento = new Evento("Nota de voz", texto, beginTime.getTime());
+
+        db.collection("users")
+                .document(uid)
+                .collection("eventos")
+                .add(nuevoEvento)
+                .addOnSuccessListener(doc -> {
+                    Toast.makeText(this, "Nota guardada en Firestore", Toast.LENGTH_SHORT).show();
+                    finish(); // Cierra esta Activity y regresa al CalendarFragment
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+                });
+
     }
 
+
+    private void programarNotificacion(Calendar calendar, String mensaje) {
+        Intent intent = new Intent(this, NotificacionReceiver.class);
+        intent.putExtra("mensaje", "Recordatorio: " + mensaje);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
+    }
 }
