@@ -243,6 +243,8 @@ public class CalendarFragment extends Fragment {
 
         YearMonth currentCalendarMonth = YearMonth.now();
 
+        calendarViewKiz.setDayViewResource(R.layout.calendar_day_view); // NUEVO
+
         calendarViewKiz.setup(
                 YearMonth.now().minusMonths(12),
                 YearMonth.now().plusMonths(12),

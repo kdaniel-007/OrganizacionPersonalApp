@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/email_hint"
             android:inputType="textEmailAddress"
-            android:textColor="?attr/colorOnSurface" /> </com.google.android.material.textfield.TextInputLayout>
+            android:textColor="@color/md_theme_dark_inverseSurface" /> </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/password_hint"
             android:inputType="textPassword"
-            android:textColor="?attr/colorOnSurface" /> </com.google.android.material.textfield.TextInputLayout>
+            android:textColor="@color/md_theme_dark_onPrimaryContainer" /> </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnRegister"
