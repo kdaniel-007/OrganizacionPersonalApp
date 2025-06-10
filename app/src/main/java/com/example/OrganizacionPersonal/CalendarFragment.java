@@ -116,14 +116,19 @@ public class CalendarFragment extends Fragment {
         FrameLayout contenedorKizitonwose = view.findViewById(R.id.contenedorKizitonwose);
 
         switchVista.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                calendarView.setVisibility(View.GONE);
-                contenedorKizitonwose.setVisibility(View.VISIBLE);
-                cargarVistaMensual(contenedorKizitonwose);
-            } else {
-                calendarView.setVisibility(View.VISIBLE);
-                contenedorKizitonwose.setVisibility(View.GONE);
-            }
+            try {
+                if (isChecked) {
+                    calendarView.setVisibility(View.GONE);
+                    contenedorKizitonwose.setVisibility(View.VISIBLE);
+                    cargarVistaMensual(contenedorKizitonwose);
+                } else {
+                    calendarView.setVisibility(View.VISIBLE);
+                    contenedorKizitonwose.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    buttonView.setChecked(!isChecked); // Revertir el cambio si hay error
+                    Toast.makeText(getContext(), "Error al cambiar vista: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
         });
 
         return view;
@@ -264,10 +269,14 @@ public class CalendarFragment extends Fragment {
             public void bind(@NonNull DayViewContainer container, @NonNull CalendarDay day) {
                 container.textView.setText(String.valueOf(day.getDate().getDayOfMonth()));
                 container.getView().setOnClickListener(v -> {
-                    Date selectedDate = java.sql.Date.valueOf(String.valueOf(day.getDate()));
-                    fechaSeleccionada = selectedDate;
-                    cargarEventosPorFecha(fechaSeleccionada);
-                    Toast.makeText(getContext(), "Seleccionado: " + dateFormat.format(fechaSeleccionada), Toast.LENGTH_SHORT).show();
+                    try {
+                        Date selectedDate = java.sql.Date.valueOf(String.valueOf(day.getDate()));
+                        fechaSeleccionada = selectedDate;
+                        cargarEventosPorFecha(fechaSeleccionada);
+                        Toast.makeText(getContext(), "Seleccionado: " + dateFormat.format(fechaSeleccionada), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.e("CalendarFragment", "Error al convertir fecha", e);
+                    }
                 });
             }
         });
