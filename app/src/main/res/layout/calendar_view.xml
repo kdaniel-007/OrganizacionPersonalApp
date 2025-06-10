@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -10,8 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="59dp"
         android:layout_marginBottom="8dp"
         android:selectedWeekBackgroundColor="#050505" />
+
+    <Switch
+        android:id="@+id/switchVistaCalendario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:minHeight="48dp"
+        android:text="@string/vista_mensual"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <FrameLayout
+        android:id="@+id/contenedorKizitonwose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
 
     <TextView
         android:id="@+id/tvFechaSeleccionada"
@@ -45,7 +64,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No hay eventos para esta fecha"
+            android:text="@string/no_hay_eventos_para_esta_fecha"
             android:textSize="16sp"
             android:layout_marginTop="8dp"
             android:gravity="center"

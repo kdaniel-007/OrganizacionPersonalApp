@@ -1,5 +1,9 @@
 package com.example.OrganizacionPersonal;
 
+import com.kizitonwose.calendar.view.MonthDayBinder;
+import com.kizitonwose.calendar.view.ViewContainer;
+import java.time.YearMonth;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,7 +15,9 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CalendarView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.kizitonwose.calendar.core.CalendarDay;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -105,7 +112,30 @@ public class CalendarFragment extends Fragment {
         fabAgregarEvento.setOnClickListener(v -> mostrarDialogoAgregarEvento());
         fabNotaVoz.setOnClickListener(v -> startActivity(new Intent(getActivity(), VoiceNoteActivity.class)));
 
+        Switch switchVista = view.findViewById(R.id.switchVistaCalendario);
+        FrameLayout contenedorKizitonwose = view.findViewById(R.id.contenedorKizitonwose);
+
+        switchVista.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                calendarView.setVisibility(View.GONE);
+                contenedorKizitonwose.setVisibility(View.VISIBLE);
+                cargarVistaMensual(contenedorKizitonwose);
+            } else {
+                calendarView.setVisibility(View.VISIBLE);
+                contenedorKizitonwose.setVisibility(View.GONE);
+            }
+        });
+
         return view;
+    }
+
+    public class DayViewContainer extends ViewContainer {
+        final TextView textView;
+
+        public DayViewContainer(@NonNull View view) {
+            super(view);
+            textView = view.findViewById(R.id.dayText);
+        }
     }
 
     private void toggleFabMenu() {
@@ -155,6 +185,7 @@ public class CalendarFragment extends Fragment {
                             Evento evento = doc.toObject(Evento.class);
                             evento.setId(doc.getId());
                             listaEventos.add(evento);
+                            programarNotificacion(requireContext(), evento.getFecha(), "Recordatorio: " + evento.getTitulo());
                         }
                         eventoAdapter.updateEventos(listaEventos);
 
@@ -202,6 +233,44 @@ public class CalendarFragment extends Fragment {
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Error al eliminar: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
+    private void cargarVistaMensual(FrameLayout container) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View monthView = inflater.inflate(R.layout.calendar_month_view, container, false);
+        container.removeAllViews();
+        container.addView(monthView);
+
+        com.kizitonwose.calendar.view.CalendarView calendarViewKiz = monthView.findViewById(R.id.calendarView);
+
+        YearMonth currentCalendarMonth = YearMonth.now();
+
+        calendarViewKiz.setup(
+                YearMonth.now().minusMonths(12),
+                YearMonth.now().plusMonths(12),
+                java.time.DayOfWeek.MONDAY
+        );
+
+        calendarViewKiz.scrollToMonth(currentCalendarMonth);
+
+        calendarViewKiz.setDayBinder(new MonthDayBinder<DayViewContainer>() {
+            @NonNull
+            @Override
+            public DayViewContainer create(@NonNull View view) {
+                return new DayViewContainer(view);
+            }
+
+            @Override
+            public void bind(@NonNull DayViewContainer container, @NonNull CalendarDay day) {
+                container.textView.setText(String.valueOf(day.getDate().getDayOfMonth()));
+                container.getView().setOnClickListener(v -> {
+                    Date selectedDate = java.sql.Date.valueOf(String.valueOf(day.getDate()));
+                    fechaSeleccionada = selectedDate;
+                    cargarEventosPorFecha(fechaSeleccionada);
+                    Toast.makeText(getContext(), "Seleccionado: " + dateFormat.format(fechaSeleccionada), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
     private Date obtenerInicioDelDia(Date fecha) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(fecha);
@@ -220,5 +289,22 @@ public class CalendarFragment extends Fragment {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
         return cal.getTime();
+    }
+
+    private void programarNotificacion(Context context, Date fecha, String mensaje) {
+        Intent intent = new Intent(context, NotificacionReceiver.class);
+        intent.putExtra("mensaje", mensaje);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                (int) System.currentTimeMillis(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, fecha.getTime(), pendingIntent);
+        }
     }
 }

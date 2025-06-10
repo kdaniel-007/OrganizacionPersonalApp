@@ -19,4 +19,6 @@
     <string name="agregar_evento">Agregar evento</string>
     <string name="grabar_nota_de_voz">Grabar nota de voz</string>
     <string name="sin_eventos">Sin eventos</string>
+    <string name="vista_mensual">Vista mensual</string>
+    <string name="no_hay_eventos_para_esta_fecha">No hay eventos para esta fecha</string>
 </resources>

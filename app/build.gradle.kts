@@ -61,4 +61,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
     implementation("androidx.recyclerview:recyclerview:1.4.0")
+
+    implementation ("com.kizitonwose.calendar:view:2.3.0")
 }

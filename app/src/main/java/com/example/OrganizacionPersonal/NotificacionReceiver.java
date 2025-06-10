@@ -1,5 +1,6 @@
 package com.example.OrganizacionPersonal;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -14,6 +15,7 @@ public class NotificacionReceiver extends BroadcastReceiver {
 
     private static final String CHANNEL_ID = "recordatorio_channel";
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
         String mensaje = intent.getStringExtra("mensaje");
